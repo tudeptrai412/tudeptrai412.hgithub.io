@@ -1,0 +1,52 @@
+const express = require("express");
+const cors = require("cors");
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+let posts = [
+  {
+    id: 1,
+    content: "Bài đầu tiên 😎",
+    likes: 0,
+    comments: []
+  }
+];
+
+// lấy danh sách bài viết
+app.get("/posts", (req, res) => {
+  res.json(posts);
+});
+
+// đăng bài
+app.post("/posts", (req, res) => {
+  const newPost = {
+    id: Date.now(),
+    content: req.body.content,
+    likes: 0,
+    comments: []
+  };
+  posts.unshift(newPost);
+  res.json(newPost);
+});
+
+// like bài
+app.post("/posts/:id/like", (req, res) => {
+  const post = posts.find(p => p.id == req.params.id);
+  if (post) {
+    post.likes++;
+    res.json(post);
+  }
+});
+
+// comment
+app.post("/posts/:id/comment", (req, res) => {
+  const post = posts.find(p => p.id == req.params.id);
+  if (post) {
+    post.comments.push(req.body.comment);
+    res.json(post);
+  }
+});
+
+app.listen(5000, () => console.log("Server chạy tại http://localhost:5000"));
